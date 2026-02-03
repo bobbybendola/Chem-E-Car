@@ -1,5 +1,5 @@
  /*
-Code last updated: 1/26/2026, 8:00 PM
+Code last updated: 2/3/2026, 10:00 AM
 Recent changes:
   - When the light intensity goes under threshold and car stops, motor will also stop
     - Similarly, the switch may be pulled again to reset the cycle without needing to restart the arduino
@@ -25,7 +25,8 @@ Adafruit_AS7341 as7341;
 #define linear_actuator_IN2 6
 //#define air_pump_IN1 7 // Mechanical team will be using an air pump soon
 //#define air_pump_IN2 8
-#define pump_sleep 7
+#define pump_sleep 7     
+//PUMP_SLEEP required to be driven HIGH to allow the motor driver for the car to work. 
 #define car_sleep 8 
 
 #define ASTEP_VAL 2999
@@ -63,7 +64,7 @@ unsigned long switchOnTime;
 unsigned long currentTime;
 int flag = 1; // 1 = flip has been switched to ON, 0 = flip has been switched to OFF
 bool stoppingFlag = 0;  // 1 = never rerun anything, 0 = reaction still going, continue operations
-
+bool setupDelay=false;   //used to allow the car 8s only at the start of the set-up, and after initial setup, the loop of the car doesn't cause 8s delay to repeat.
 // Added functionality to control the scale factor in setATIME
  /*void findColorSensorScale() {
   long t0 = millis();  // set initial count
@@ -98,6 +99,7 @@ void waitForReswitch() {
   digitalWrite(linear_actuator_IN2, LOW);
 
   while (1) {
+     Serial.println("CAR Stopped, Waiting for switch to be reset..");
     if (digitalRead(switch_pin) == 1) return;  // breaks loop if switch is reset
   }
 }
@@ -106,7 +108,8 @@ void setup()
 {
   pinMode(linear_actuator_IN1, OUTPUT);
   pinMode(linear_actuator_IN2, OUTPUT);
-
+  pinMode(pump_sleep, OUTPUT); 
+   
   pinMode(motor_pin, OUTPUT);
   pinMode(unused_pin, OUTPUT);
   pinMode(switch_pin, INPUT_PULLUP);
@@ -122,7 +125,7 @@ void setup()
   // Total integration time = (ATIME + 1) * (ASTEP + 1) * 2.78 µS
   // Set initial scale (would be overriden later)
   //STEVEN: USING HARDCODED VALUES FOR ATIME & ASTEP after testing with the Rho Team. 
-  as7341.setATIME(ATIME_VAL)); // integration time per step in increments of 2.78 us, range: 0 to 255
+  as7341.setATIME(ATIME_VAL); // integration time per step in increments of 2.78 us, range: 0 to 255
   as7341.setASTEP(ASTEP_VAL); // number of integration steps, range: 0 to 65535
   as7341.setGain(AS7341_GAIN_512X); // Gain can increase sensitivity, STEVEN: Left unchanged during testing by the Rho Team. 
   Serial.print("setup done");
@@ -153,15 +156,30 @@ void loop()
 
       Serial.print("Starting new reaction protocol:\t"); Serial.print("MOTOR: ON\t"); Serial.println("Linear Actuator: Compressing...");
       // Start motor
+      digitalWrite(pump_sleep, HIGH);   //STEVEN: set the sleep pin to high, to allow H-Bridge of the Motor driver to output higher voltage to the pump motor
       digitalWrite(motor_pin, HIGH);
       digitalWrite(unused_pin, LOW);
 
       // Push down Linear Actuator
       digitalWrite(linear_actuator_IN1, LOW);
       digitalWrite(linear_actuator_IN2, HIGH);
-
-      delay(8000);  //STEVEN: 8s THIS DELAY IS ADDED SO THAT WE CAN AVOID SENSING THE FIRST ZERO FROM THE STOPPING RHO REACTION, 
-                    //AND ONLY READ THE SECOND ZERO READING FROM THE REACTION. 
+      //Now the reaction has started, BUT we need to avoid the first 0
+  
+      //STEVEN: 8s THIS DELAY IS ADDED SO THAT WE CAN AVOID SENSING THE FIRST ZERO FROM THE STOPPING RHO REACTION, 
+      //AND ONLY READ THE SECOND ZERO READING FROM THE REACTION.  
+      //Car is only given 8s at the start for intial setup, after that, the 
+    Serial.println("IN the 8s delay time period....");
+    if(!setupDelay)
+    {
+     reactionStart=millis(); //holds the startTime of the reaction (specifically holds time since Arduino program started, but placing this in a variable helps us save the time.
+     while (millis()-startWait<8000)
+      {
+       //execution gets stuck in this loop till 8000s
+        if(digitalRead(switch_pin)==1) {break;}  //Incase we decided to stop the car using the switch
+      }
+      //We cannot use delay(8000), since this will stop the arduino and even the linear actuator would stop as well. 
+      setupDelay=true; // set to true, so that this SETUP 8s is only given once.
+    }          
 
       if (digitalRead(switch_pin) == 1) {
         break;
@@ -190,6 +208,7 @@ void loop()
 
     case 1:  // switch off
       // stop motor
+      digitalWrite(pump_sleep, LOW);  //disconnect H-Bridge of the motor driver
       digitalWrite(motor_pin, LOW);
       digitalWrite(unused_pin, LOW);
 
@@ -200,3 +219,4 @@ void loop()
       break;
   }
 }
+
