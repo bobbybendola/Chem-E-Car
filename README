@@ -1,3 +1,19 @@
+(Changes 2/3/2026)- EpsilonCarCode_1_26_2026.ino
+
+-Fixed the pump_sleep pin for the driver: This must be set to HIGH for the motor driver to function.
+
+-Fixed the 8s delay permitted for the car: During the initial start, execution is forced into a loop for 8 seconds.
+
+-Avoided the delay() function: We cannot use delay() because it would stop the entire car's logic, including the linear actuator's movement.
+
+
+
+
+
+
+
+
+
 
 (Changes 1/26/2026)- EpsilonCarCode_1_26_2026.ino
 
