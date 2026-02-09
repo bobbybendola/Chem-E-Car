@@ -93,6 +93,7 @@ bool setupDelay=false;   //used to allow the car 8s only at the start of the set
 
 void waitForReswitch() {
   Serial.println("Threshold reached, car is stopping");
+  digitalWrite(pump_sleep,HIGH);
   digitalWrite(motor_pin, LOW);  // turn OFF motor
 
   digitalWrite(linear_actuator_IN1, HIGH);  // force linear actuator up
@@ -219,4 +220,5 @@ void loop()
       break;
   }
 }
+
 
