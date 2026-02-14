@@ -1,3 +1,11 @@
+(Changes 2/14/26)-Final Luminol Car Code
+
+-Added switch functionality and updated motion for the car after meeting with Ethan from Rho Team. 
+-Included a state diagram based of the car code. 
+-Now the car only moves when there are non-zero sensor readings, NOT right when the switch is turned ON. 
+-Code must still be tested on a breadboard. There has been successful testing of the linear actuator and motors(along with motor drivers), with the Arduino Nano during Week 6.
+
+
 (Changes 2/3/2026)- EpsilonCarCode_1_26_2026.ino
 
 -Fixed the pump_sleep pin for the driver: This must be set to HIGH for the motor driver to function.
@@ -5,13 +13,6 @@
 -Fixed the 8s delay permitted for the car: During the initial start, execution is forced into a loop for 8 seconds.
 
 -Avoided the delay() function: We cannot use delay() because it would stop the entire car's logic, including the linear actuator's movement.
-
-
-
-
-
-
-
 
 
 
