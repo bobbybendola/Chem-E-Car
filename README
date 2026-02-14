@@ -1,4 +1,4 @@
-(Changes 2/14/26)-Final Luminol Car Code
+**(Changes 2/14/26)-Final Luminol Car Code**
 
 -Added switch functionality and updated motion for the car after meeting with Ethan from Rho Team. 
 -Included a state diagram based of the car code. 
@@ -6,7 +6,7 @@
 -Code must still be tested on a breadboard. There has been successful testing of the linear actuator and motors(along with motor drivers), with the Arduino Nano during Week 6.
 
 
-(Changes 2/3/2026)- EpsilonCarCode_1_26_2026.ino
+** (Changes 2/3/2026)- EpsilonCarCode_1_26_2026.ino **
 
 -Fixed the pump_sleep pin for the driver: This must be set to HIGH for the motor driver to function.
 
@@ -16,7 +16,7 @@
 
 
 
-(Changes 1/26/2026)- EpsilonCarCode_1_26_2026.ino
+** (Changes 1/26/2026)- EpsilonCarCode_1_26_2026.ino **
 
 -Updated threshold intensity to 0 for the car based of chemical reaction this year, when the reaction turns black, the Car motor is immediately turned off.  When the measured intensity is detected as 0 from the reaction, the motor is turned OFF, and the linear actuator is pulled back.
 
