@@ -53,6 +53,7 @@ void setup()
   pinMode(linear_actuator_IN1, OUTPUT);
   pinMode(linear_actuator_IN2, OUTPUT);
   pinMode(pump_sleep, OUTPUT); 
+  pinMode(car_sleep,OUTPUT);
    
   pinMode(motor_pin, OUTPUT);
   pinMode(unused_pin, OUTPUT);
@@ -103,6 +104,7 @@ void loop()
   //STEVEN: CHANGED THE CHANNEL TO DETECT THE BLUE WAVELENGTH OF LIGHT, BASED OF THIS YEAR'S REACTION
   //measured_intensity = as7341.getChannel(AS7341_CHANNEL_480nm_F6);
   switch_state = digitalRead(switch_pin);
+  
 
   /*
   Motor pin will go high if the switch is turned on for the linear actuator. To prevent the car motor from prematurely running,
@@ -115,6 +117,7 @@ void loop()
 
       Serial.println("Starting new reaction protocol:\t"); 
       Serial.println("Linear Actuator: Compressing...");
+      digitalWrite(pump_sleep, HIGH);
       // Push down Linear Actuator
       digitalWrite(linear_actuator_IN1, LOW);
       digitalWrite(linear_actuator_IN2, HIGH);
